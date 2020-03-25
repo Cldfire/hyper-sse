@@ -1,19 +1,10 @@
-extern crate base64;
-extern crate futures;
-extern crate hyper;
-extern crate libhydrogen;
-extern crate serde;
-#[macro_use]
-extern crate serde_derive;
-extern crate serde_json;
-extern crate tokio;
-
 use futures::future;
 use hyper::{Body, Chunk, Request, Response, StatusCode};
 use hyper::rt::{Future, Stream};
 use libhydrogen::secretbox::Key;
 use serde::Serialize;
 use serde::de::DeserializeOwned;
+use serde_derive::{Serialize, Deserialize};
 use std::collections::HashMap;
 use std::hash::Hash;
 use std::net::SocketAddr;
