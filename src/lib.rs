@@ -277,8 +277,26 @@ struct Client {
 }
 
 impl Client {
-    fn send_chunk(&mut self, chunk: Chunk) -> Result<(), Chunk> {
-        let result = self.tx.send_data(chunk);
+    fn send_chunk(&mut self, mut chunk: Chunk) -> Result<(), Chunk> {
+        let mut result;
+
+        // This disgusting hack exists because we can't call self.tx.ready_poll()
+        // as we are not on a task in this function.
+        //
+        // Async rust isn't my specialty, but as far as I know fixing that would
+        // basically require re-writing the library. I don't have that kind of
+        // time so I did this :)
+        loop {
+            result = self.tx.send_data(chunk);
+
+            match result {
+                Ok(_) => break,
+                Err(c) => {
+                    chunk = c;
+                    thread::sleep(Duration::from_millis(10));
+                }
+            }
+        }
 
         match (&result, self.first_error) {
             (Err(_), None) => {
