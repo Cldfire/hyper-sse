@@ -121,6 +121,7 @@ impl<C: DeserializeOwned + Eq + Hash + FromStr + Send + Serialize> Server<C> {
         };
         if !correct_channel || !fresh_token {
             return Response::builder()
+                .header("Access-Control-Allow-Origin", "*")
                 .status(StatusCode::UNAUTHORIZED)
                 .body(Body::empty())
                 .expect("Could not create response");
